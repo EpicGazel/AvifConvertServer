@@ -14,7 +14,7 @@ cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 @app.route('/<image_name>.webp')
 def serve_image(image_name):
     # Check if the image with the given name exists in avif format
-    avif_path = f'./images/avifs/{image_name}.avif'
+    avif_path = f'./images/{image_name}.avif'
     if os.path.exists(avif_path):
         # Convert the avif image to webp
         #webp_data = convert_image(avif_path)
@@ -25,7 +25,7 @@ def serve_image(image_name):
 
 
 # Function to convert image format
-@cache.memoize(timeout=15)  # Cache the converted image for 1 hour
+@cache.memoize(timeout=3600)  # Cache the converted image for 1 hour
 def convert_image(input_path):
     with Image.open(input_path) as img:
         output_buffer = io.BytesIO()
@@ -34,7 +34,7 @@ def convert_image(input_path):
         print(f"Cache generated at: {timestamp}")
         return output_buffer.getvalue()
 
-# Function to convert image format
+# Function to convert image format and store on disk
 # def convert_image(input_path, output_path):
 #     with Image.open(input_path) as img:
 #         img.save(output_path)
