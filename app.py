@@ -10,8 +10,8 @@ import logging
 
 app = Flask(__name__)
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+app.logger.addHandler(logging.StreamHandler())
+app.logger.setLevel(logging.INFO)
 
 cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
@@ -43,6 +43,9 @@ def convert_image():
         img.save(webp_buffer, format='WEBP')
         webp_buffer.seek(0)
 
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        app.logger.info(f"Cache generated at: {timestamp}")
+
         # Return the converted image
         return send_file(webp_buffer, mimetype='image/webp')
     except Exception as e:
@@ -57,10 +60,6 @@ def serve_image(image_name):
     if os.path.exists(avif_path):
         # Convert the avif image to webp
         webp_data = convert_image(avif_path)
-
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        logger.info(f"Cache generated at: {timestamp}")
-
         return send_file(io.BytesIO(webp_data), mimetype='image/webp')
         # return send_file(avif_path, mimetype='image/avif')
     else:
@@ -75,7 +74,7 @@ def convert_image(input_path):
         img.save(output_buffer, format='WEBP', quality=80)
 
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        logger.info(f"Cache generated at: {timestamp}")
+        app.logger.info(f"Cache generated at: {timestamp}")
 
         return output_buffer.getvalue()
 
