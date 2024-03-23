@@ -17,9 +17,9 @@ def serve_image(image_name):
     avif_path = f'./images/{image_name}.avif'
     if os.path.exists(avif_path):
         # Convert the avif image to webp
-        #webp_data = convert_image(avif_path)
-        #return send_file(io.BytesIO(webp_data), mimetype='image/webp')
-        return send_file(avif_path, mimetype='image/avif')
+        webp_data = convert_image(avif_path)
+        return send_file(io.BytesIO(webp_data), mimetype='image/webp')
+        #return send_file(avif_path, mimetype='image/avif')
     else:
         return 'Image not found', 404
 
