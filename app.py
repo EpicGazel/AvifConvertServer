@@ -33,7 +33,6 @@ def get_image_size(image_url):
         response = requests.head(image_url)
         response.raise_for_status()  # Raise an exception for invalid response
         if 'content-length' in response.headers:
-            print(f'response.headers:\n{response.headers}')
             return int(response.headers['content-length'])
         else:
             return None  # Unable to determine image size
