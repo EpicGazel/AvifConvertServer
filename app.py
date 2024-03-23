@@ -21,6 +21,7 @@ cache = Cache(app, config={'CACHE_TYPE': 'filesystem', 'CACHE_DIR': 'cache', 'CA
 limiter = Limiter(get_remote_address, app=app, default_limits=["30 per minute"], storage_uri="memory://")
 
 SIZE_LIMIT = 10 * 1024 * 1024
+MAX_PIXELS = 2560 * 1440
 
 
 def get_time():
@@ -32,6 +33,7 @@ def get_image_size(image_url):
         response = requests.head(image_url)
         response.raise_for_status()  # Raise an exception for invalid response
         if 'content-length' in response.headers:
+            print(f'response.headers:\n{response.headers}')
             return int(response.headers['content-length'])
         else:
             return None  # Unable to determine image size
@@ -90,6 +92,11 @@ def convert(image_url):
 
     # Open the downloaded image with PIL
     img = Image.open(io.BytesIO(response.content))
+    num_pixels = img.size[0] * img.size[1]
+
+    if num_pixels > MAX_PIXELS:
+        app.logger.warning(f"{get_time()} - Image dimensions larger than {MAX_PIXELS} pixels: {image_name}")
+        return None
 
     # Convert the image to webp format
     webp_buffer = io.BytesIO()
