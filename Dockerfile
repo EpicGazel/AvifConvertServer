@@ -10,4 +10,4 @@ COPY app.py .
 
 EXPOSE 25565
 
-CMD ["python", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0:25565", "app:app"]
+CMD ["python", "-m", "gunicorn", "-w", "4", "-b", "0.0.0.0:8080", "app:app"]
